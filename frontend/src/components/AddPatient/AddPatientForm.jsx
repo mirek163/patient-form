@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Box, TextField, Typography, Button, Paper, Collapse } from "@mui/material";
 import "./AddPatientStyles.css";
+import axios from "axios";
 
 const AddPatientPage = () => {
   const [form, setForm] = useState({
@@ -50,24 +51,66 @@ const AddPatientPage = () => {
     setForm((prev) => ({ ...prev, showReps: !prev.showReps }));
   };
 
-  const handleSubmit = (e) => {
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   console.log("Odeslaná data pacienta:", form);
+  //   alert("Pacient byl přidán.");
+  //   setForm({
+  //     firstName: "",
+  //     lastName: "",
+  //     idNumber: "",
+  //     address: "",
+  //     insurance: "",
+  //     doctorName: "",
+  //     doctorContact: "",
+  //     specialistName: "",
+  //     specialistContact: "",
+  //     specialistNurse: "",
+  //     representativeFields: [{ name: "", surname: "", contact: "" }],
+  //     showADP: false,
+  //     showReps: false,
+  //   });
+  // };
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Odeslaná data pacienta:", form);
-    alert("Pacient byl přidán.");
-    setForm({
-      name: "",
-      idNumber: "",
-      address: "",
-      insurance: "",
-      doctorName: "",
-      doctorContact: "",
-      specialistName: "",
-      specialistContact: "",
-      specialistNurse: "",
-      representativeFields: [{ name: "", surname: "", contact: "" }],
-      showADP: false,
-      showReps: false,
-    });
+  
+    const patientData = {
+      first_name: form.firstName,
+      last_name: form.lastName,
+      birth_number: form.idNumber,
+      address: form.address,
+      insurance: form.insurance,
+      doctor_name: form.doctorName,
+      doctor_contact: form.doctorContact,
+      adp_name: form.specialistName,
+      adp_contact: form.specialistContact,
+      adp_head_nurse: form.specialistNurse,
+    };
+  
+    try {
+      const response = await axios.post("http://localhost:5000/patients", patientData);
+      console.log("Patient added:", response.data);
+  
+      alert("Pacient byl přidán.");
+      setForm({
+        firstName: "",
+        lastName: "",
+        idNumber: "",
+        address: "",
+        insurance: "",
+        doctorName: "",
+        doctorContact: "",
+        specialistName: "",
+        specialistContact: "",
+        specialistNurse: "",
+        representativeFields: [{ name: "", surname: "", contact: "" }],
+        showADP: false,
+        showReps: false,
+      });
+    } catch (error) {
+      console.error("Error adding patient:", error);
+      alert("Chyba při přidávání pacienta.");
+    }
   };
 
   return (
@@ -84,9 +127,17 @@ const AddPatientPage = () => {
           </Typography>
           <Box display="flex" flexWrap="wrap" gap={2}>
             <TextField
-              label="Jméno a příjmení"
-              name="name"
-              value={form.name}
+              label="Jméno"
+              name="firstName"
+              value={form.firstName}
+              onChange={handleChange}
+              fullWidth
+              required
+            />
+            <TextField
+              label="Příjmení"
+              name="lastName"
+              value={form.lastName}
               onChange={handleChange}
               fullWidth
               required

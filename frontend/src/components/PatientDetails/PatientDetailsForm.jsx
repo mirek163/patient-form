@@ -1,14 +1,19 @@
 import React from "react";
-import { Box, Typography, List, ListItem, Divider } from "@mui/material";
+import { Box, Typography, List, ListItem, Divider, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+
 
 const PatientDetailsPage = ({ patient }) => {
   const navigate = useNavigate();
+  const { userRole } = useAuth();
 
   const handleRecordClick = (recordId) => {
     navigate(`/patients/${patient.id}/records/${recordId}`);
   };
-
+  const handleAddRecordClick = () => {
+    navigate(`/patients/${patient.id}/add-record`);
+  };
   return (
     <Box sx={{ maxWidth: 900, margin: "0 auto", padding: 3 }}>
       <Typography variant="h4" gutterBottom>
@@ -28,6 +33,19 @@ const PatientDetailsPage = ({ patient }) => {
       <Typography variant="body1">{`Kontakt: ${patient.specialist.contact}`}</Typography>
       <Typography variant="body1">{`Vedoucí sestra: ${patient.specialist.headNurse}`}</Typography>
  
+
+      {(userRole === "doctor" || userRole === "nurse") && (  
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          sx={{ marginTop: "20px" }}
+          onClick={handleAddRecordClick}
+        >
+          Přidat nový záznam
+        </Button>
+      )}
+
       <Typography variant="h5" gutterBottom sx={{ marginTop: "20px" }}>
         Seznam záznamů
       </Typography>

@@ -1,24 +1,31 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState(null); // "user", "doctor", nebo "nurse"
+  const [userRole, setUserRole] = useState(null);
   const navigate = useNavigate();
 
-  const login = (role) => {
+  const login = (role, token) => {
     setIsAuthenticated(true);
     setUserRole(role);
-    navigate("/patients"); 
+    localStorage.setItem("authToken", token); // Ulož token
+    navigate("/patients");
   };
 
   const logout = () => {
     setIsAuthenticated(false);
     setUserRole(null);
-    navigate("/login"); 
+    localStorage.removeItem("authToken"); // Odstran token
+    navigate("/login");
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token) setIsAuthenticated(true);
+  }, []);
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, userRole, login, logout }}>
