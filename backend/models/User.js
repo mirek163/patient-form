@@ -8,4 +8,5 @@ const User = sequelize.define('User', {
   role: { type: DataTypes.ENUM('doctor', 'nurse', 'user'), allowNull: false },
 });
 
+
 module.exports = User;

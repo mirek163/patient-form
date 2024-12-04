@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Box, TextField, Typography, Button, Paper, Collapse } from "@mui/material";
 import "./AddPatientStyles.css";
 import axios from "axios";
@@ -18,6 +19,8 @@ const AddPatientPage = () => {
     showADP: false,
     showReps: false,
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -88,10 +91,14 @@ const AddPatientPage = () => {
     };
   
     try {
-      const response = await axios.post("http://localhost:5000/patients", patientData);
+      const token = localStorage.getItem("authToken");
+      const response = await axios.post("http://localhost:5000/patients", patientData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       console.log("Patient added:", response.data);
   
       alert("Pacient byl přidán.");
+      navigate("/patients");
       setForm({
         firstName: "",
         lastName: "",

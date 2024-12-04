@@ -9,6 +9,8 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   const login = (role, token) => {
+    console.log("Role:", role);
+  console.log("Token to store in localStorage:", token);
     setIsAuthenticated(true);
     setUserRole(role);
     localStorage.setItem("authToken", token); // Ulož token
@@ -24,6 +26,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
+    console.log("Token retrieved from localStorage:", token);
     if (token) setIsAuthenticated(true);
   }, []);
 

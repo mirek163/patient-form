@@ -1,11 +1,11 @@
 import React from "react";
 import PageWrapper from "../components/Shared/PageWrapper";
-import AddRecordPage from "../components/AddPatient/AddPatientForm";
+import AddRecordForm from "../components/AddPatient/AddPatientForm";
 
-const AddPatient = () => {
+const AddPatient = ({ patient }) => {
   return (
     <PageWrapper>
-      <AddRecordPage />
+      <AddRecordForm patient={patient}/>
     </PageWrapper>
   );
 };

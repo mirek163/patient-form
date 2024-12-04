@@ -6,7 +6,9 @@ const Record = require('./models/Record');
 const initializeDatabase = async () => {
   await connectDatabase();
   try {
-    await sequelize.sync({ force: true }); ˇ// při spuštění promaz tabulky a vytvoř je dle modelu v backendu 
+    await sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
+    await sequelize.sync({ force: true }); // při spuštění promaz tabulky a vytvoř je dle modelu v backendu 
+    await sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
     console.log('✅ Tabulky byly načteny z databáze ✅');
   } catch (error) {
     console.error('❌Chyba při načítání tabulek❌:', error);

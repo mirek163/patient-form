@@ -33,7 +33,7 @@ const App = () => {
         }
       />
       <Route
-        path="/patients/:id"
+        path="/patients/:patientId"
         element={
           <ProtectedRoute>
             <PatientDetails />
@@ -41,7 +41,7 @@ const App = () => {
         }
       />
       <Route
-        path="/patients/:id/add-record"
+        path="/patients/:patientId/add-record"
         element={
           <ProtectedRoute>
             <AddRecord />
@@ -49,7 +49,7 @@ const App = () => {
         }
       />
       <Route
-        path="/patients/:id/records/:recordId"
+        path="/patients/:patientId/records/:recordId"
         element={
           <ProtectedRoute>
             <RecordDetails />

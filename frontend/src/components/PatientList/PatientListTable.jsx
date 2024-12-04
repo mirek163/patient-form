@@ -12,8 +12,8 @@ const PatientListPage = ({ patients }) => {
     navigate("/patients/add");
   };
 
-  const handleViewDetails = (id) => {
-    navigate(`/patients/${id}`);
+  const handleViewDetails = (patientId) => {
+    navigate(`/patients/${patientId}`);
   };
 
   return (
@@ -56,33 +56,41 @@ const PatientListPage = ({ patients }) => {
             </Typography>
           </Grid>
         </Grid>
-        {patients.map((patient) => (
-          <Grid
-            container
-            key={patient.id}
-            className="patient-list-row"
-            //onClick={() => handleViewDetails(patient.id)}
-          >
-            <Grid item xs={3}>
-              <Typography>{patient.name}</Typography>
+
+        {patients.length === 0 ? (
+          <Typography variant="h6" className="empty-message">
+            Žádný pacient k dispozici.
+          </Typography>
+        ) : (
+          patients.map((patient) => (
+            <Grid
+              container
+              key={patient.patient_id}
+              className="patient-list-row"
+              //onClick={() => handleViewDetails(patient.id)}
+            >
+              <Grid item xs={3}>
+                <Typography>{patient.first_name} {patient.last_name}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography>{patient.birth_number}</Typography>
+              </Grid>
+              <Grid item xs={4}>
+                <Typography>{patient.address}</Typography>
+              </Grid>
+              <Grid item xs={2} className="table-actions">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => handleViewDetails(patient.patient_id)}
+                >
+                  Více
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item xs={3}>
-              <Typography>{patient.idNumber}</Typography>
-            </Grid>
-            <Grid item xs={4}>
-              <Typography>{patient.address}</Typography>
-            </Grid>
-            <Grid item xs={2} className="table-actions">
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => handleViewDetails(patient.id)}
-              >
-                Více
-              </Button>
-            </Grid>
-          </Grid>
-        ))}
+          ))
+        )}
+
       </Paper>
     </Box>
   );

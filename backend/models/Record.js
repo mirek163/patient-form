@@ -16,4 +16,7 @@ const Record = sequelize.define('Record', {
   signal_code_request: { type: DataTypes.STRING },
 });
 
+Patient.hasMany(Record, { foreignKey: 'patient_id', as: 'records' });
+Record.belongsTo(Patient, { foreignKey: 'patient_id', as: 'patient' });
+Record.belongsTo(User, { foreignKey: 'author_id', as: 'author' });
 module.exports = Record;
