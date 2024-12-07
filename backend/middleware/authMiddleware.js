@@ -5,22 +5,23 @@ require('dotenv').config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const authenticate = (req, res, next) => {
-  console.log("Authenticating request...");
-  console.log("authMiddleware Headers:", req.headers.authorization);
+  const authHeader = req.header("Authorization");
 
-  const token = req.header("Authorization");
-
-  if (!token) {
-    return res.status(401).json({ message: "Žádný token, autorizace nepřijmuta" });
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "Token chybí nebo je neplatný" });
   }
 
+  const token = authHeader.split(" ")[1];
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded; // Attach user data to request
+    console.log("Decoded JWT Payload:", decoded); // Log
+    req.user = decoded; 
     next();
   } catch (error) {
+    console.error("JWT Verification Failed:", error.message);
     res.status(401).json({ message: "Token není validní" });
   }
 };
+
 
 module.exports = authenticate;

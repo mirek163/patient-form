@@ -33,10 +33,9 @@ app.post('/patients', async (req, res) => {
     res.status(400).json({error});
   }
 });
-// pro post a getyy by melo byt aplikovano authenticate- Middleware. Nicmene mi to nefunguje
 
 // Nalezení pacienta
-app.get('/patients', async (req, res) => {
+app.get('/patients',authenticate, async (req, res) => {
   try {
     const patients = await Patient.findAll();
     res.status(200).json(patients);
@@ -47,7 +46,7 @@ app.get('/patients', async (req, res) => {
 });
 
 // Nalezení záznamu pro pacienta
-app.get('/patients/:patientId', async (req, res) => {
+app.get('/patients/:patientId',authenticate, async (req, res) => {
   const { patientId } = req.params;
   try {
     const patient = await Patient.findByPk(patientId, {
@@ -66,11 +65,36 @@ app.get('/patients/:patientId', async (req, res) => {
   }
 });
 
-// Přidání záznamu pro pacienta (dodelat)
-app.post('/patients/:id/records', async (req, res) => {});
-
 // Zobrazení konkrétního záznamu pro pacienta (dodelat)
 app.get('/patients/:id/records/:recordId', async (req, res) => {});
+
+// Přidání záznamu pro pacienta
+app.post('/patients/:id/records',authenticate, async (req, res) => {
+  console.log("POST /patients/:id/records endpoint hit");
+
+  const { id: patientId } = req.params;
+  //console.log("Patient ID:", patientId);
+  //console.log("Incoming payload:", req.body);
+  //console.log("Authenticated User:", req.user);
+
+  if (!patientId) {
+    return res.status(400).json({ error: "Invalid patient ID" });
+  }
+
+  try {
+    // spoj patient_id s request body
+    const recordData = { ...req.body, patient_id: patientId, author_id: req.user.id };
+
+    // Vytvoř nový záznam
+    const record = await Record.create(recordData);
+
+    console.log("Záznam vytvořen úspěšně:", record);
+    res.status(201).json(record); 
+  } catch (error) {
+    console.error("Error:", error.message);
+  }
+});
+
 
 // Spuštění serveru
 const PORT = 5000; 
