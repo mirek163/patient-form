@@ -65,8 +65,31 @@ app.get('/patients/:patientId',authenticate, async (req, res) => {
   }
 });
 
-// Zobrazení konkrétního záznamu pro pacienta (dodelat)
-app.get('/patients/:id/records/:recordId', async (req, res) => {});
+// Zobrazení konkrétního záznamu pro pacienta
+app.get('/patients/:patientId/records/:recordId', authenticate, async (req, res) => {
+  const { patientId, recordId } = req.params; 
+
+  try {
+    const record = await Record.findOne({
+      where: { record_id: recordId, patient_id: patientId },
+      include: [
+        { model: User, as: 'author', attributes: ['email'] }, 
+        { model: Patient, as: 'patient', attributes: ['first_name', 'last_name'] }, 
+      ],
+    });
+
+    if (!record) {
+      return res.status(404).json({ error: "Record not found for this patient" });
+    }
+
+    res.status(200).json(record); 
+  } catch (error) {
+    console.error("Error fetching record:", error.message);
+    res.status(500).json({ error: "Unable to fetch the record" });
+  }
+});
+
+
 
 // Přidání záznamu pro pacienta
 app.post('/patients/:id/records',authenticate, async (req, res) => {

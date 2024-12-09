@@ -11,35 +11,39 @@ const RecordDetailsPage = ({ record }) => {
       <Typography variant="h4" gutterBottom>
         Detail záznamu
       </Typography>
-      <Typography variant="body1">{`Autor záznamu: ${record.author}`}</Typography>
-      <Typography variant="body1">{`Datum: ${record.date}`}</Typography>
-      <Typography variant="body1">{`Čas: ${record.time}`}</Typography>
-      <Typography variant="body1">{`Diagnóza: ${record.diagnosis.description}`}</Typography>
-      <Typography variant="body1">{`Kód diagnózy: ${record.diagnosis.code}`}</Typography>
+      <Typography variant="body1">{`Pacient: ${record.patient.first_name} ${record.patient.last_name}`}</Typography>
+      <Typography variant="body1">{`Email autora: ${record.author?.email || "N/A"}`}</Typography>
+      <Typography variant="body1">{`Datum: ${new Date(record.record_date).toLocaleDateString()}`}</Typography>
+      <Typography variant="body1">{`Čas: ${record.record_time}`}</Typography>
+      <Typography variant="body1">{`Diagnóza: ${record.defect_diagnosis}`}</Typography>
+      <Typography variant="body1">{`Kód diagnózy (MKN-11): ${record.mkn11}`}</Typography>
 
       <Typography variant="h5" gutterBottom sx={{ marginTop: "20px" }}>
         Anamnéza
       </Typography>
-      <Typography variant="body1">{`Komorbidity: ${record.anamnesis.comorbidities}`}</Typography>
-      <Typography variant="body1">{`Sociální anamnéza: ${record.anamnesis.social}`}</Typography>
+      <Typography variant="body1">{`Komorbidity: ${record.anamnesis || "N/A"}`}</Typography>
+      <Typography variant="body1">{`Sociální anamnéza: ${record.social_anamnesis || "N/A"}`}</Typography>
 
       <Typography variant="h5" gutterBottom sx={{ marginTop: "20px" }}>
         Popis defektu
       </Typography>
-      <Typography variant="body1">{`Umístění rány: ${record.wound.location}`}</Typography>
-      <Typography variant="body1">{`Lateralizace: ${record.wound.lateralization}`}</Typography>
-      <Typography variant="body1">{`Velikost: ${record.wound.size}`}</Typography>
-      <Typography variant="body1">{`Zbarvení lůžka rány: ${record.wound.bedColor}`}</Typography>
-      <Typography variant="body1">{`Stav okrajů rány: ${record.wound.edges}`}</Typography>
-      <Typography variant="body1">{`Stav sekrece: ${record.wound.secretion}`}</Typography>
-      <Typography variant="body1">{`Zápach: ${record.wound.odor}`}</Typography>
-      <Typography variant="body1">{`Okolní tkáň defektu: ${record.wound.surroundingTissue}`}</Typography>
+      <Typography variant="body1">{`Umístění rány: ${record.defect_description || "N/A"}`}</Typography>
+      <Typography variant="body1">{`Lateralizace: ${record.lateralization || "N/A"}`}</Typography>
+      <Typography variant="body1">{`Velikost: ${record.wound_size || "N/A"}`}</Typography>
+      <Typography variant="body1">{`Zbarvení lůžka rány: ${record.bed_color || "N/A"}`}</Typography>
+      <Typography variant="body1">{`Stav okrajů rány: ${record.edges || "N/A"}`}</Typography>
+      <Typography variant="body1">{`Stav sekrece: ${record.secretion || "N/A"}`}</Typography>
+      <Typography variant="body1">{`Zápach: ${record.odor || "N/A"}`}</Typography>
+      <Typography variant="body1">{`Okolní tkáň defektu: ${record.surrounding_tissue || "N/A"}`}</Typography>
 
-      <Typography variant="h5" gutterBottom sx={{ marginTop: "20px" }}>
-        Souhlasy
-      </Typography>
-      <Typography variant="body1">{`Souhlas firmy/pacienta: ${record.consents.firm ? "Ano" : "Ne"}`}</Typography>
-      <Typography variant="body1">{`Souhlas lékaře: ${record.consents.doctor ? "Ano" : "Ne"}`}</Typography>
+      {record.photo && (
+        <Typography variant="body1" sx={{ marginTop: "20px" }}>
+          <strong>Foto defektu:</strong>
+          <a href={record.photo} target="_blank" rel="noopener noreferrer">
+            Zobrazit fotografii
+          </a>
+        </Typography>
+      )}
     </Box>
   );
 };
