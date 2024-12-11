@@ -1,7 +1,10 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom"; 
+import { Box, Typography, Button } from "@mui/material"; 
+
 
 const RecordDetailsPage = ({ record }) => {
+  const navigate = useNavigate(); 
   if (!record) {
     return <Typography>Record not found</Typography>;
   }
@@ -44,6 +47,14 @@ const RecordDetailsPage = ({ record }) => {
           </a>
         </Typography>
       )}
+            <Button
+        variant="contained"
+        color="primary"
+        sx={{ marginTop: "20px" }}
+        onClick={() => navigate(-1)}
+      >
+        Zpět
+      </Button>
     </Box>
   );
 };

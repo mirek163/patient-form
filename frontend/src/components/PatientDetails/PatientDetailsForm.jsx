@@ -12,6 +12,16 @@ const PatientDetailsForm = ({ patient }) => {
     return <Typography variant="h6">Nebyla nalezena žádná data k pacientovi.</Typography>;
   }
 
+  const formatDate = (isoDate) => {
+    if (!isoDate) return "N/A";
+    const date = new Date(isoDate);
+    return date.toLocaleDateString("cs-CZ", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
   const handleRecordClick = (recordId) => {
     navigate(`/patients/${patient.patient_id}/records/${recordId}`);
   };
@@ -26,7 +36,7 @@ const PatientDetailsForm = ({ patient }) => {
         Detaily pacienta
       </Typography>
       <Typography variant="h6" gutterBottom>
-        {patient.first_name}{patient.last_name} (Rodné číslo: {patient.birth_number})
+        {patient.first_name} {patient.last_name} (Rodné číslo: {patient.birth_number})
       </Typography>
       <Typography variant="body1">{`Adresa: ${patient.address}`}</Typography>
       <Typography variant="body1">{`Zdravotní pojišťovna: ${patient.insurance}`}</Typography>
@@ -64,7 +74,7 @@ const PatientDetailsForm = ({ patient }) => {
                 sx={{ padding: "10px", cursor: "pointer" }}
               >
                 <Typography variant="body1">
-                  {`Datum: ${record.record_date || "N/A"}, Doktor: ${record.author.email || "N/A"}, Diagnóza: ${record.defect_description || "N/A"}`}
+                  {`Datum: ${formatDate(record.record_date)}, Doktor: ${record.author.email || "N/A"}, Diagnóza: ${record.defect_diagnosis || "N/A"}`}
                 </Typography>
               </ListItem>
               <Divider />
@@ -74,6 +84,15 @@ const PatientDetailsForm = ({ patient }) => {
           <Typography variant="body1">Žádné záznamy k dispozici.</Typography>
         )}
       </List>
+      <Button
+        variant="outlined"
+        color="primary"
+        fullWidth
+        sx={{ marginTop: "20px" }}
+        onClick={() => navigate(-1)}
+      >
+        Zpět
+      </Button>
     </Box>
   );
 };
