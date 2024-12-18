@@ -1,12 +1,11 @@
 import React from "react";
-import { Box, Typography, List, ListItem, Divider, Button } from "@mui/material";
+import { Box, Grid, Typography, Button, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const PatientDetailsForm = ({ patient }) => {
   const navigate = useNavigate();
   const { userRole } = useAuth();
-
 
   if (!patient) {
     return <Typography variant="h6">Nebyla nalezena žádná data k pacientovi.</Typography>;
@@ -42,11 +41,11 @@ const PatientDetailsForm = ({ patient }) => {
       <Typography variant="body1">{`Zdravotní pojišťovna: ${patient.insurance}`}</Typography>
       <Typography variant="body1" fontWeight="bold">Praktický lékař:</Typography>
       <Typography variant="body1">
-        {`Jméno: ${patient.doctor_name || "N/A"}   Kontakt: ${patient.doctor_contact || "N/A"} `}
+        {`Jméno: ${patient.doctor_name || "N/A"}   Kontakt: ${patient.doctor_contact || "N/A"}`}
       </Typography>
       <Typography variant="body1" fontWeight="bold">Ambulantní specialista:</Typography>
       <Typography variant="body1">
-        {`Jméno: ${patient.adp_name || "N/A"}   Kontakt: ${patient.adp_contact || "N/A"}   Vedoucí sestra: ${patient.adp_head_nurse || "N/A"}` }
+        {`Jméno: ${patient.adp_name || "N/A"}   Kontakt: ${patient.adp_contact || "N/A"}   Vedoucí sestra: ${patient.adp_head_nurse || "N/A"}`}
       </Typography>
 
       {(userRole === "doctor" || userRole === "nurse") && (
@@ -64,26 +63,65 @@ const PatientDetailsForm = ({ patient }) => {
       <Typography variant="h5" gutterBottom sx={{ marginTop: "20px" }}>
         Seznam záznamů
       </Typography>
-      <List>
+
+      {/* Table Container */}
+      <Paper sx={{ padding: 2, marginTop: 2 }} elevation={3}>
+        {/* Table Header */}
+        <Grid container sx={{ fontWeight: "bold", backgroundColor: "#f5f5f5", padding: 1 }}>
+          <Grid item xs={3}>
+            <Typography variant="subtitle1">Datum</Typography>
+          </Grid>
+          <Grid item xs={4}>
+            <Typography variant="subtitle1">Doktor</Typography>
+          </Grid>
+          <Grid item xs={3}>
+            <Typography variant="subtitle1">Diagnóza</Typography>
+          </Grid>
+          <Grid item xs={2}>
+            <Typography variant="subtitle1">Akce</Typography>
+          </Grid>
+        </Grid>
+
+        {/* Table Rows */}
         {patient.records?.length > 0 ? (
           patient.records.map((record) => (
-            <React.Fragment key={record.record_id}>
-              <ListItem
-                button
-                onClick={() => handleRecordClick(record.record_id)}
-                sx={{ padding: "10px", cursor: "pointer" }}
-              >
-                <Typography variant="body1">
-                  {`Datum: ${formatDate(record.record_date)}, Doktor: ${record.author.email || "N/A"}, Diagnóza: ${record.defect_diagnosis || "N/A"}`}
-                </Typography>
-              </ListItem>
-              <Divider />
-            </React.Fragment>
+            <Grid
+              container
+              key={record.record_id}
+              sx={{
+                padding: 1,
+                borderBottom: "1px solid #ddd",
+                alignItems: "center",
+              }}
+            >
+              <Grid item xs={3}>
+                <Typography>{formatDate(record.record_date)}</Typography>
+              </Grid>
+              <Grid item xs={4}>
+                <Typography>{record.author.email || "N/A"}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography>{record.defect_diagnosis || "N/A"}</Typography>
+              </Grid>
+              <Grid item xs={2}>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  color="primary"
+                  onClick={() => handleRecordClick(record.record_id)}
+                >
+                  Otevřít
+                </Button>
+              </Grid>
+            </Grid>
           ))
         ) : (
-          <Typography variant="body1">Žádné záznamy k dispozici.</Typography>
+          <Typography variant="body1" sx={{ marginTop: 2 }}>
+            Žádné záznamy k dispozici.
+          </Typography>
         )}
-      </List>
+      </Paper>
+
       <Button
         variant="outlined"
         color="primary"
