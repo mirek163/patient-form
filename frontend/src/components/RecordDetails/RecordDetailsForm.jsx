@@ -1,13 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; 
-import { Box, Typography, Button } from "@mui/material"; 
-
+import { Box, Typography, Button, Modal } from "@mui/material"; 
 
 const RecordDetailsPage = ({ record }) => {
+  const [open, setOpen] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState(null);
   const navigate = useNavigate(); 
+
   if (!record) {
     return <Typography>Record not found</Typography>;
   }
+
+  const imageUrl = `http://localhost:5000/patients/${record.patient_id}/records/${record.record_id}/photo`;
+
+  const handleOpen = () => {
+    setPhotoUrl(imageUrl);
+    setOpen(true);
+  };
+
+  const handleClose = () => setOpen(false);
 
   return (
     <Box sx={{ maxWidth: 900, margin: "0 auto", padding: 3 }}>
@@ -40,14 +51,45 @@ const RecordDetailsPage = ({ record }) => {
       <Typography variant="body1">{`Okolní tkáň defektu: ${record.surrounding_tissue || "N/A"}`}</Typography>
 
       {record.photo && (
-        <Typography variant="body1" sx={{ marginTop: "20px" }}>
-          <strong>Foto defektu:</strong>
-          <a href={record.photo} target="_blank" rel="noopener noreferrer">
-            Zobrazit fotografii
-          </a>
-        </Typography>
+        <Box sx={{ marginTop: "20px" }}>
+          <Typography variant="body1">
+            <strong>Foto defektu:</strong>
+          </Typography>
+          <img
+            src={imageUrl}
+            alt="Defekt"
+            style={{ maxWidth: "100%", maxHeight: "75px", cursor: "pointer" }}
+            onClick={handleOpen}
+          />
+        </Box>
       )}
-            <Button
+
+      {/* Modal pro zvětšení obrázku */}
+      <Modal
+        open={open}
+        onClose={handleClose}
+      >
+        <Box sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          backgroundColor: 'white',
+          padding: 2,
+          maxWidth: 800,
+          maxHeight: '80%',
+          overflow: 'auto',
+        }}>
+          <img
+            src={photoUrl}
+            alt="Zvětšovací efekt"
+            style={{ width: '100%', height: 'auto' }}
+          />
+        </Box>
+      </Modal>
+      
+
+      <Button
         variant="contained"
         color="primary"
         sx={{ marginTop: "20px" }}

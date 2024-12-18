@@ -65,7 +65,8 @@ const Record = sequelize.define("Record", {
     type: DataTypes.STRING,
   },
   photo: {
-    type: DataTypes.TEXT,
+    type: DataTypes.BLOB("long"), //  BLOB pro binanární data (multer)
+    allowNull: true, 
   },
 });
 

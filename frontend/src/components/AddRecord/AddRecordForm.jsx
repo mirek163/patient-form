@@ -4,7 +4,7 @@ import { Box, TextField, Typography, Button, Checkbox, FormControlLabel, Paper }
 import axios from "axios";
 
 const AddRecordPage = () => {
-  const { patientId } = useParams(); // Get patientId from URL
+  const { patientId } = useParams(); 
   console.log("Patient ID from URL:", patientId);
   const [form, setForm] = useState({
     date: "",
@@ -32,13 +32,15 @@ const AddRecordPage = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
+  
     if (type === "file" && files.length > 0) {
       setForm((prev) => ({ ...prev, photo: files[0] }));
-      setPhotoName(files[0].name);
+      setPhotoName(files[0].name); 
     } else {
       setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
     }
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,29 +50,36 @@ const AddRecordPage = () => {
       return;
     }
 
-    const recordData = {
-      record_date: form.date,
-      record_time: form.time,
-      defect_diagnosis: form.diagnosisDesc,
-      mkn11: form.diagnosisCode,
-      anamnesis: form.comorbidities,
-      social_anamnesis: form.socialAnamnesis,
-      defect_description: form.woundLocation,
-      lateralization: form.lateralization,
-      wound_size: form.woundSize,
-      bed_color: form.bedColor,
-      edges: form.edges,
-      secretion: form.secretion,
-      odor: form.odor,
-      surrounding_tissue: form.surroundingTissue,
-      photo: form.photo ? form.photo.name : "", 
-    };
+    const formData = new FormData();
+      formData.append("record_date", form.date);
+      formData.append("record_time", form.time);
+      formData.append("defect_diagnosis", form.diagnosisDesc);
+      formData.append("mkn11", form.diagnosisCode);
+      formData.append("anamnesis", form.comorbidities);
+      formData.append("social_anamnesis", form.socialAnamnesis);
+      formData.append("defect_description", form.woundLocation);
+      formData.append("lateralization", form.lateralization);
+      formData.append("wound_size", form.woundSize);
+      formData.append("bed_color", form.bedColor);
+      formData.append("edges", form.edges);
+      formData.append("secretion", form.secretion);
+      formData.append("odor", form.odor);
+      formData.append("surrounding_tissue", form.surroundingTissue);
+
+      if (form.photo) {
+        formData.append("photo", form.photo);
+      }
+
 
     try {
       const token = localStorage.getItem("authToken");
-      await axios.post(`http://localhost:5000/patients/${patientId}/records`, recordData, {
-        headers: { Authorization: `Bearer ${token}` },
+      await axios.post(`http://localhost:5000/patients/${patientId}/records`, formData, {
+        headers: { 
+          Authorization: `Bearer ${token}`, 
+          "Content-Type": "multipart/form-data" 
+        },
       });
+      
       alert("Záznam byl úspěšně přidán!");
       navigate(`/patients/${patientId}`);
     } catch (error) {

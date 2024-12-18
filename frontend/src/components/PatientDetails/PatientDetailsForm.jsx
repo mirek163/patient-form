@@ -68,13 +68,16 @@ const PatientDetailsForm = ({ patient }) => {
       <Paper sx={{ padding: 2, marginTop: 2 }} elevation={3}>
         {/* Table Header */}
         <Grid container sx={{ fontWeight: "bold", backgroundColor: "#f5f5f5", padding: 1 }}>
-          <Grid item xs={3}>
+          <Grid item xs={2}>
             <Typography variant="subtitle1">Datum</Typography>
+          </Grid>
+          <Grid item xs={2}>
+            <Typography variant="subtitle1">Změna</Typography>
           </Grid>
           <Grid item xs={4}>
             <Typography variant="subtitle1">Doktor</Typography>
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={2}>
             <Typography variant="subtitle1">Diagnóza</Typography>
           </Grid>
           <Grid item xs={2}>
@@ -94,13 +97,16 @@ const PatientDetailsForm = ({ patient }) => {
                 alignItems: "center",
               }}
             >
-              <Grid item xs={3}>
+              <Grid item xs={2}>
                 <Typography>{formatDate(record.record_date)}</Typography>
+              </Grid>
+              <Grid item xs={2}>
+                <Typography>{record.record_time}</Typography>
               </Grid>
               <Grid item xs={4}>
                 <Typography>{record.author.email || "N/A"}</Typography>
               </Grid>
-              <Grid item xs={3}>
+              <Grid item xs={2}>
                 <Typography>{record.defect_diagnosis || "N/A"}</Typography>
               </Grid>
               <Grid item xs={2}>

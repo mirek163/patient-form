@@ -9,7 +9,6 @@ const router = express.Router();
 // JWT Klíč
 require('dotenv').config();
 const JWT_SECRET = process.env.JWT_SECRET;
-//const JWT_SECRET = "secret-key"; // Nahradit pak v produkci
 
 // routa pro registraci
 router.post(
@@ -17,7 +16,6 @@ router.post(
   [
     body("email").isEmail().withMessage("Špatně zadaný email"),
     body("password").isLength({ min: 6 }).withMessage("Heslo musí mít alespoň 6 charakterů"),
-    //body("role").isIn(["doctor", "nurse", "user"]).withMessage("Invalid role"),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -72,7 +70,7 @@ router.post(
         return res.status(400).json({ message: "Špatné údaje" });
       }
 
-      // Vytvoř token ( trvání na hodku)
+      // Vytvoř token ( trvání na hodinu)
       const token = jwt.sign({ id: user.user_id, role: user.role }, JWT_SECRET, { expiresIn: "1h" });
       res.json({ message: "Úspěšně přihlášeno", token, user: { email: user.email, role: user.role } });
     } catch (error) {
