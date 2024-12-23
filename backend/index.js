@@ -6,6 +6,9 @@ const Record = require('./models/Record');
 const User = require('./models/User');
 const authenticate = require("./middleware/authMiddleware"); 
 const authRoutes = require("./auth"); 
+const multer = require("multer");
+const storage = multer.memoryStorage();
+const upload = multer({ storage })
 
 // Vytvoření instance Express aplikace
 const app = express();
@@ -19,11 +22,10 @@ app.use(cors()); // Povolení CORS pro všechny routy (API může být voláno z
 //Přihlášení a registrace
 app.use("/auth", authRoutes); 
 
-
 // Přidání pacienta
 app.post('/patients', async (req, res) => {
-  console.log("POST /patients endpoint hit");
-  console.log("Incoming payload:", req.body);
+  //console.log("POST /patients endpoint hit");
+  //console.log("Incoming payload:", req.body);
   try {
     // Vytvoření nového pacienta
     const patient = await Patient.create(req.body); 
@@ -65,6 +67,27 @@ app.get('/patients/:patientId',authenticate, async (req, res) => {
   }
 });
 
+// Je potřeba definovat adresu k fotce
+app.get('/patients/:patientId/records/:recordId/photo',authenticate, async (req, res) => {
+  const { patientId, recordId } = req.params;
+
+  try {
+    const record = await Record.findOne({
+      where: { record_id: recordId, patient_id: patientId },
+    });
+
+    if (!record || !record.photo) {
+      return res.status(404).json({ error: "Fotka nenalezena" });
+    }
+
+    res.set("Content-Type", "image/png"); 
+    res.send(record.photo);
+  } catch (error) {
+    console.error("Error fetching photo:", error.message);
+    res.status(500).json({ error: "Unable to fetch photo" });
+  }
+});
+
 // Zobrazení konkrétního záznamu pro pacienta
 app.get('/patients/:patientId/records/:recordId', authenticate, async (req, res) => {
   const { patientId, recordId } = req.params; 
@@ -79,7 +102,7 @@ app.get('/patients/:patientId/records/:recordId', authenticate, async (req, res)
     });
 
     if (!record) {
-      return res.status(404).json({ error: "Record not found for this patient" });
+      return res.status(404).json({ error: "Záznam nebyl nalezen pro pacienta" });
     }
 
     res.status(200).json(record); 
@@ -91,8 +114,8 @@ app.get('/patients/:patientId/records/:recordId', authenticate, async (req, res)
 
 
 
-// Přidání záznamu pro pacienta
-app.post('/patients/:id/records',authenticate, async (req, res) => {
+// Přidání záznamu pro pacienta ( prozatím přidání pouze jednoho obrázku )
+app.post('/patients/:id/records',authenticate,upload.single("photo"), async (req, res) => {
   console.log("POST /patients/:id/records endpoint hit");
 
   const { id: patientId } = req.params;
@@ -106,7 +129,7 @@ app.post('/patients/:id/records',authenticate, async (req, res) => {
 
   try {
     // spoj patient_id s request body
-    const recordData = { ...req.body, patient_id: patientId, author_id: req.user.id };
+    const recordData = { ...req.body, patient_id: patientId, author_id: req.user.id, photo: req.file ? req.file.buffer : null };
 
     // Vytvoř nový záznam
     const record = await Record.create(recordData);
@@ -120,10 +143,10 @@ app.post('/patients/:id/records',authenticate, async (req, res) => {
 
 
 // Spuštění serveru
-const PORT = 5000; 
 initializeDatabase().then(() => { 
-  app.listen(PORT, () => { 
-    console.log(`⚡ Server běží na portu: ${PORT}⚡`); 
+  require("dotenv").config();
+  app.listen(process.env.PORT, () => { 
+    console.log(`⚡ Server běží na portu: ${process.env.PORT}⚡`); 
   });
 });
 

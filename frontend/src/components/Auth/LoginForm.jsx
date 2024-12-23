@@ -11,22 +11,6 @@ const LoginForm = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
- // const handleSubmit = (e) => {
-  //   e.preventDefault();
-
-  //   // Zatím Mock data: 
-  //   //s rolemi: doctor@test.cz, nurse@test.cz bez rolí user@test.cz
-  //   if (email === "doctor@test.cz") {
-  //     login("doctor");
-  //   } else if (email === "nurse@test.cz") {
-  //     login("nurse");
-  //   } else if (email === "user@test.cz") {
-  //     login("user");
-  //   } else {
-  //     alert("Špatné údaje");
-  //   }
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
