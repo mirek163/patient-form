@@ -2,7 +2,7 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { body, validationResult } = require("express-validator");
-const User = require("./models/User");
+const {User} = require("./models/User");
 
 const router = express.Router();
 
@@ -35,8 +35,8 @@ router.post(
       const hashedPassword = await bcrypt.hash(password, 10);
 
       // Ulož uživatele
-      const user = await User.create({ email, password: hashedPassword, role });
-      res.status(201).json({ message: "Úspěšná registrace!", user: { email, role } }); //není volaná na fronendu, pouze errory  
+      const user = await User.create({ email, password: hashedPassword });
+      res.status(201).json({ message: "Úspěšná registrace!", user: { email } }); //není volaná na fronendu, pouze errory  
     } catch (error) {
       res.status(500).json({ message: "Server error", error: error.message });
     }

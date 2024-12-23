@@ -1,0 +1,33 @@
+.user-list-table {
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.doctor-container {
+  background-color: #f9f9f9; 
+  border: 1px solid #ddd; 
+  margin-bottom: 16px; 
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.worker-row {
+  background-color: #ffffff; 
+  border-radius: 4px;
+  padding: 8px 16px;
+  margin-top: 8px;
+}
+
+button {
+  font-size: 0.8rem; 
+  padding: 4px 12px; 
+}
+
+.user-list-row {
+  align-items: center;
+  border-bottom: none; 
+}
+
+.doctor-row {
+  font-weight: bold; 
+}

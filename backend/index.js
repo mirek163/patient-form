@@ -3,12 +3,14 @@ const cors = require('cors'); // CORS middleware pro povolení požadavků z jin
 const initializeDatabase = require('./db'); 
 const Patient = require('./models/Patient');
 const Record = require('./models/Record');
-const User = require('./models/User');
+const {User, DoctorWorker} = require('./models/User');
+
 const authenticate = require("./middleware/authMiddleware"); 
 const authRoutes = require("./auth"); 
 const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage })
+const roleMiddleware = require('./middleware/roleMiddleware');
 
 // Vytvoření instance Express aplikace
 const app = express();
@@ -22,13 +24,129 @@ app.use(cors()); // Povolení CORS pro všechny routy (API může být voláno z
 //Přihlášení a registrace
 app.use("/auth", authRoutes); 
 
+
+// Dashboard pro master roli
+app.get('/dashboard', authenticate, roleMiddleware(['master']), async (req, res) => {
+  console.log("Dashboard API called");
+  try {
+    // Získej doctore s workeri
+    const doctorsWithWorkers = await User.findAll({
+      where: { role: 'doctor' },
+      attributes: ['user_id', 'email', 'role'],
+      include: [
+        {
+          model: DoctorWorker,
+          as: 'assignedworkers',
+          include: [
+            {
+              model: User,
+              as: 'worker',
+              attributes: ['user_id', 'email', 'role'],
+            },
+          ],
+        },
+      ],
+    });
+    console.log('Pracovníci:', JSON.stringify(doctorsWithWorkers, null, 2));
+
+    res.status(200).json({
+      doctorsWithWorkers: doctorsWithWorkers,
+    });
+  } catch (error) {
+    console.error('Nepodařilo se získat data:', error.message);
+    res.status(500).json({ error: 'Unable to fetch dashboard data' });
+  }
+});
+
+
+
+
+
+// Odstranit uživatele
+app.delete('/users/:id', authenticate, roleMiddleware(['master']), async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findByPk(id);
+    if (!user) return res.status(404).json({ error: "Uživatel nenalezen" });
+
+    await user.destroy();
+    res.status(200).json({ message: "Uživatel uspěšně smazán" });
+  } catch (error) {
+    console.error("Chyba v odstranění uživatele:", error.message);
+    res.status(500).json({ error: "Nepovedlo se odstranit uživatele" });
+  }
+});
+
+// Změna role pro uživatele
+app.put('/users/:id/role', authenticate, roleMiddleware(['master']), async (req, res) => {
+  const { id } = req.params;
+  const { role } = req.body;
+
+  if (!['master', 'doctor', 'worker'].includes(role)) {
+    return res.status(400).json({ error: "Invalid role" });
+  }
+
+  try {
+    const user = await User.findByPk(id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    user.role = role;
+    await user.save();
+
+    res.status(200).json({ message: "Role updated successfully" });
+  } catch (error) {
+    console.error("Error updating role:", error.message);
+    res.status(500).json({ error: "Unable to update role" });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+// získej všechny pečovatele přiřazené k doktorovi 
+app.get('/workers', authenticate, roleMiddleware(['doctor']), async (req, res) => {
+  try {
+    const assignedworkers = await DoctorWorker.findAll({
+      where: { doctor_id: req.user.id },
+      include: [
+        {
+          model: User,
+          as: 'worker',
+          attributes: ['user_id', 'email', 'role'],
+        },
+      ],
+    });
+
+    const workers = assignedworkers.map((relation) => relation.worker);
+
+    res.status(200).json(workers);
+  } catch (error) {
+    console.error("Error fetching workers:", error.message);
+    res.status(500).json({ error: "Unable to fetch workers" });
+  }
+});
+
+
+
+
+
+
+
+
+
 // Přidání pacienta
-app.post('/patients', async (req, res) => {
-  //console.log("POST /patients endpoint hit");
-  //console.log("Incoming payload:", req.body);
+app.post('/patients',authenticate, roleMiddleware(['worker','master']), async (req, res) => {
+  const recordData = { ...req.body, created_by: req.user.id };
   try {
     // Vytvoření nového pacienta
-    const patient = await Patient.create(req.body); 
+    const patient = await Patient.create(recordData); 
     res.status(201).json(patient); // Odeslání vytvořeného pacienta
   } catch (error) {
     console.error("Chyba při přidávání:", error.message);
@@ -36,10 +154,15 @@ app.post('/patients', async (req, res) => {
   }
 });
 
+
+
 // Nalezení pacienta
-app.get('/patients',authenticate, async (req, res) => {
+app.get('/patients',authenticate, roleMiddleware(['worker']), async (req, res) => {
   try {
-    const patients = await Patient.findAll();
+    //console.log(req.user.id);
+    const patients = await Patient.findAll({
+      where: { created_by: req.user.id },
+    });
     res.status(200).json(patients);
   } catch (error) {
     console.error("Chyba při získávání pacientů:", error.message);
@@ -119,9 +242,6 @@ app.post('/patients/:id/records',authenticate,upload.single("photo"), async (req
   console.log("POST /patients/:id/records endpoint hit");
 
   const { id: patientId } = req.params;
-  //console.log("Patient ID:", patientId);
-  //console.log("Incoming payload:", req.body);
-  //console.log("Authenticated User:", req.user);
 
   if (!patientId) {
     return res.status(400).json({ error: "Invalid patient ID" });
@@ -153,6 +273,3 @@ initializeDatabase().then(() => {
 
 
 /// node index.js
-
-///INSERT INTO Records (patient_id, author_id, record_date, defect_diagnosis, mkn11, anamnesis, defect_description, photo, signal_code_request, createdAt, updatedAt) VALUES (1, 1, '2024-15-03', 'Example diagnosis text', 'A01', 'Example anamnesis text', 'Example defect description', 'example_photo_url.jpg', 'Signal123', NOW(), NOW());
-///UPDATE users SET role = 'doctor' WHERE user_id = 1;

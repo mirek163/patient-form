@@ -22,7 +22,7 @@ const PatientListPage = ({ patients }) => {
           List pacientů
         </Typography>
       <Box className="add-button-container">
-        {(userRole === "doctor" || userRole === "nurse") && (
+        {(userRole === "worker" || "master") && (
           <Button
             variant="contained"
             color="primary"
