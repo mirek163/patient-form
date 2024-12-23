@@ -14,7 +14,15 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(true);
     setUserRole(role);
     localStorage.setItem("authToken", token); // Ulož token
-    navigate("/patients");
+    if (role === 'master') {
+      navigate('/dashboard'); // Přesměruj při roli master
+    } else if (role === 'doctor') {
+      navigate('/workers'); // Přesměruj při roli  doctor
+    } else if (role === 'worker') {
+      navigate('/patients'); // Přesměruj při roli worker
+    } else {
+      navigate('/login'); 
+    }
   };
 
   const logout = () => {

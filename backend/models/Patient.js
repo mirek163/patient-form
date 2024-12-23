@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
+const { User } = require('./User');
 
 const Patient = sequelize.define('Patient', {
   patient_id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
@@ -13,6 +14,14 @@ const Patient = sequelize.define('Patient', {
   adp_name: { type: DataTypes.STRING },
   adp_contact: { type: DataTypes.STRING },
   adp_head_nurse: { type: DataTypes.STRING },
+  created_by: {
+    type: DataTypes.INTEGER,
+    references: { model: 'Users', key: 'user_id' }, 
+    allowNull: false,
+  },
 });
+
+User.hasMany(Patient, { foreignKey: 'created_by', as: 'patients' });
+Patient.belongsTo(User, { foreignKey: 'created_by', as: 'creator' });
 
 module.exports = Patient;

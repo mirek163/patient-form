@@ -8,6 +8,9 @@ import RecordDetails from "./pages/RecordDetails";
 import AddRecord from "./pages/AddRecord";
 import AddPatient from "./pages/AddPatient";
 import ProtectedRoute from "./components/Shared/ProtectedRoute";
+import MasterDashboard from "./pages/MasterDashboard";
+import WorkersList from "./pages/WorkersList";
+
 
 const App = () => {
   return (
@@ -15,6 +18,27 @@ const App = () => {
       <Route path="/" element={<Navigate to="/login" />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+
+
+      <Route
+        path="/workers"
+        element={
+          <ProtectedRoute>
+            <WorkersList/>
+          </ProtectedRoute>
+        }
+      />
+
+
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <MasterDashboard />
+          </ProtectedRoute>
+        }
+      />
+
 
       <Route
         path="/patients"

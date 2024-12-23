@@ -48,7 +48,7 @@ const PatientDetailsForm = ({ patient }) => {
         {`Jméno: ${patient.adp_name || "N/A"}   Kontakt: ${patient.adp_contact || "N/A"}   Vedoucí sestra: ${patient.adp_head_nurse || "N/A"}`}
       </Typography>
 
-      {(userRole === "doctor" || userRole === "nurse") && (
+      {(userRole === "master" || userRole === "worker") && (
         <Button
           variant="contained"
           color="primary"
@@ -85,7 +85,6 @@ const PatientDetailsForm = ({ patient }) => {
           </Grid>
         </Grid>
 
-        {/* Table Rows */}
         {patient.records?.length > 0 ? (
           patient.records.map((record) => (
             <Grid

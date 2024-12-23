@@ -54,26 +54,6 @@ const AddPatientPage = () => {
     setForm((prev) => ({ ...prev, showReps: !prev.showReps }));
   };
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   console.log("Odeslaná data pacienta:", form);
-  //   alert("Pacient byl přidán.");
-  //   setForm({
-  //     firstName: "",
-  //     lastName: "",
-  //     idNumber: "",
-  //     address: "",
-  //     insurance: "",
-  //     doctorName: "",
-  //     doctorContact: "",
-  //     specialistName: "",
-  //     specialistContact: "",
-  //     specialistNurse: "",
-  //     representativeFields: [{ name: "", surname: "", contact: "" }],
-  //     showADP: false,
-  //     showReps: false,
-  //   });
-  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
   

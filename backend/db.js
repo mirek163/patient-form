@@ -1,5 +1,5 @@
 const { connectDatabase, sequelize } = require('./config/database');
-const User = require('./models/User');
+const {User, DoctorWorker} = require('./models/User');
 const Patient = require('./models/Patient');
 const Record = require('./models/Record');
 
@@ -12,12 +12,69 @@ const initializeDatabase = async () => {
     console.log('✅ Tabulky byly načteny z databáze ✅');
 
     // Testovací data
-    const hashedPassword = await require('bcrypt').hash('doctor@test.cz', 10);
-    await User.create({
+    const bcrypt = require('bcrypt');
+    const hashedPasswordmaster = await bcrypt.hash('doctor@test.cz', 10);
+    const hashedPassworddoctor1 = await bcrypt.hash('doctor1@test.cz', 10);
+    const hashedPassworddoctor2 = await bcrypt.hash('doctor2@test.cz', 10);
+
+    const hashedPasswordworker1 = await bcrypt.hash('worker1@test.cz', 10);
+    const hashedPasswordworker2 = await bcrypt.hash('worker2@test.cz', 10);
+    const hashedPasswordworker3 = await bcrypt.hash('worker3@test.cz', 10);
+
+
+    // master 
+    const masterUser = await User.create({
       email: 'doctor@test.cz',
-      password: hashedPassword,
+      password: hashedPasswordmaster,
+      role: 'master',
+    });
+
+    // doctor 
+    const doctorUser1  = await User.create({
+      email: 'doctor1@test.cz',
+      password: hashedPassworddoctor1,
       role: 'doctor',
     });
+
+    const doctorUser2  = await User.create({
+      email: 'doctor2@test.cz',
+      password: hashedPassworddoctor2,
+      role: 'doctor',
+    });
+
+    // worker 
+    const worker1 = await User.create({
+      email: 'worker1@test.cz',
+      password: hashedPasswordworker1,
+      role: 'worker',
+    });
+
+    const worker2 = await User.create({
+      email: 'worker2@test.cz',
+      password: hashedPasswordworker2,
+      role: 'worker',
+    });
+    const worker3 = await User.create({
+      email: 'worker3@test.cz',
+      password: hashedPasswordworker3,
+      role: 'worker',
+    });
+
+    await DoctorWorker.create({
+      doctor_id: doctorUser1.user_id,
+      worker_id: worker1.user_id,
+    });
+
+    await DoctorWorker.create({
+      doctor_id: doctorUser1.user_id,
+      worker_id: worker2.user_id,
+    });
+
+    await DoctorWorker.create({
+      doctor_id: doctorUser2.user_id,
+      worker_id: worker3.user_id,
+    });
+
 
     await Patient.create({
       first_name: 'Jan',
@@ -30,11 +87,12 @@ const initializeDatabase = async () => {
       adp_name: 'Alena Nováková',
       adp_contact: '+420987654321',
       adp_head_nurse: 'Marie Nováková',
+      created_by: 4,
     });
 
     await Record.create({
       patient_id: 1,
-      author_id: 1, 
+      author_id: 4, 
       record_date: new Date(),
       record_time: new Date().toLocaleTimeString(),
       defect_diagnosis: 'Zlomenina nohy',

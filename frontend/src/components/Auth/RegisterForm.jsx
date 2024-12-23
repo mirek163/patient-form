@@ -5,7 +5,7 @@ import axios from "axios";
 import "./AuthStyles.css";
 
 const RegisterForm = () => {
-  const [form, setForm] = useState({ email: "", password: "", confirmPassword: "", role: "user" });
+  const [form, setForm] = useState({ email: "", password: "", confirmPassword: "", role: "" });
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {

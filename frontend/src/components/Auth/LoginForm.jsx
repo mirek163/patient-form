@@ -28,7 +28,8 @@ const LoginForm = () => {
           alert("Chyba při přihlašování");
         }
       } else {
-        alert("Server error");
+        alert(error.response?.data?.message || "Chyba při přihlašování");
+
       }
     }
   };
