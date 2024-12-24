@@ -104,6 +104,21 @@ app.put('/users/:id/role', authenticate, roleMiddleware(['master']), async (req,
 
 
 
+app.get('/api/workers/:workerId/patients', authenticate, roleMiddleware(['doctor', 'worker']), async (req, res) => {
+  const { workerId } = req.params;
+
+  try {
+    const patients = await Patient.findAll({
+      where: { created_by: workerId },
+    });
+
+    res.status(200).json(patients);
+  } catch (error) {
+    console.error("Error fetching patients for worker:", error.message);
+    res.status(500).json({ error: "Unable to fetch patients" });
+  }
+});
+
 
 
 
@@ -156,19 +171,69 @@ app.post('/patients',authenticate, roleMiddleware(['worker','master']), async (r
 
 
 
-// Nalezení pacienta
-app.get('/patients',authenticate, roleMiddleware(['worker']), async (req, res) => {
+
+
+app.get('/patients', authenticate, async (req, res) => {
+  const { role, id: loggedInUserId } = req.user;
+  const { workerId } = req.query; // Get optional workerId from query params
+
   try {
-    //console.log(req.user.id);
-    const patients = await Patient.findAll({
-      where: { created_by: req.user.id },
-    });
+    let patients;
+
+    if (role === 'worker') {
+      // Worker: Fetch patients created by themselves
+      patients = await Patient.findAll({ where: { created_by: loggedInUserId } });
+    } else if (role === 'doctor' && workerId) {
+      // Doctor: Fetch patients for a specific worker
+      patients = await Patient.findAll({ where: { created_by: workerId } });
+    } else {
+      return res.status(403).json({ error: 'Unauthorized access' });
+    }
+
     res.status(200).json(patients);
   } catch (error) {
-    console.error("Chyba při získávání pacientů:", error.message);
-    res.status(500).json({ error: "Nelze načíst pacienty" });
+    console.error("Error fetching patients:", error.message);
+    res.status(500).json({ error: "Unable to fetch patients" });
   }
 });
+
+
+
+
+
+
+// Nalezení pacienta
+app.get('/api/patients', authenticate, async (req, res) => {
+  const { role, id: loggedInUserId } = req.user;
+  const { workerId } = req.query; // Get optional workerId from query params
+
+  try {
+    let patients;
+
+    if (role === 'worker') {
+      // Worker: Fetch patients created by themselves
+      patients = await Patient.findAll({ where: { created_by: loggedInUserId } });
+    } else if (role === 'doctor' && workerId) {
+      // Doctor: Fetch patients for a specific worker
+      patients = await Patient.findAll({ where: { created_by: workerId } });
+    } else {
+      return res.status(403).json({ error: 'Unauthorized access' });
+    }
+
+    res.status(200).json(patients);
+  } catch (error) {
+    console.error("Error fetching patients:", error.message);
+    res.status(500).json({ error: "Unable to fetch patients" });
+  }
+});
+
+
+
+
+
+
+
+
 
 // Nalezení záznamu pro pacienta
 app.get('/patients/:patientId',authenticate, async (req, res) => {

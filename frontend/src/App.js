@@ -20,6 +20,20 @@ const App = () => {
       <Route path="/register" element={<Register />} />
 
 
+
+      <Route
+        path="/workers/:workerId/patients"
+        element={
+          <ProtectedRoute>
+            <PatientList />
+          </ProtectedRoute>
+        }
+      />
+
+
+
+
+
       <Route
         path="/workers"
         element={

@@ -18,11 +18,11 @@ const PatientListPage = ({ patients }) => {
 
   return (
     <Box className="patient-list-container">
-          <Typography variant="h4" gutterBottom>
-          List pacientů
-        </Typography>
+      <Typography variant="h4" gutterBottom>
+        List pacientů
+      </Typography>
       <Box className="add-button-container">
-        {(userRole === "worker" || "master") && (
+        {(userRole === "worker" || userRole === "master" ) && (
           <Button
             variant="contained"
             color="primary"
@@ -42,7 +42,7 @@ const PatientListPage = ({ patients }) => {
           </Grid>
           <Grid item xs={3}>
             <Typography variant="subtitle1" className="table-header">
-            Rodné číslo
+              Rodné číslo
             </Typography>
           </Grid>
           <Grid item xs={4}>
@@ -67,7 +67,6 @@ const PatientListPage = ({ patients }) => {
               container
               key={patient.patient_id}
               className="patient-list-row"
-              //onClick={() => handleViewDetails(patient.id)}
             >
               <Grid item xs={3}>
                 <Typography>{patient.first_name} {patient.last_name}</Typography>
@@ -90,7 +89,6 @@ const PatientListPage = ({ patients }) => {
             </Grid>
           ))
         )}
-
       </Paper>
     </Box>
   );
